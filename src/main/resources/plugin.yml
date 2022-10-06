@@ -1,0 +1,7 @@
+name: QBProjetctManager
+version: ${project.version}
+main: fr.leod1.qbprojectmanager.QBProjetctManager
+authors: [ leod1 ]
+description: Project manager for QuanticsBuild
+commands:
+  test:
