@@ -2,12 +2,15 @@ package fr.leod1.qbprojectmanager.directories;
 
 import fr.leod1.qbprojectmanager.directories.directorie.Directories;
 import fr.leod1.qbprojectmanager.directories.projects.Projects;
+import fr.leod1.qbprojectmanager.ultils.Qbloc;
 import fr.leod1.qbprojectmanager.ultils.stockage.DirectoriesserializationGson;
 import fr.leod1.qbprojectmanager.ultils.stockage.FileUtils;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static fr.leod1.qbprojectmanager.QBProjetctManager.MAINQB;
 
@@ -56,18 +59,23 @@ public class FilesManager {
     }
 
     public FilesHandler getFile(String path){
-        Directories tmp = this.firstdir;
-        String[] names;
-        names = path.split("/");
-        if (names[0].equals("QBPM")){
+        FilesHandler tmp = this.firstdir;
+        ArrayList<String> names = new ArrayList<String>();
+        for (String i:path.split("/")) {
+            names.add(i);
+        }
+        if (names.get(0).equals("QBPM")){
             boolean v = false;
             for (String i: names){
-                tmp = (Directories) tmp.getNextByName(i);
-                if (names[0].equals("QBPM") && v == false) {
+                if (tmp instanceof Projects){
+                    return tmp;
+                }
+                tmp = ((Directories) tmp).getNextByName(i);
+                if (names.get(0).equals("QBPM") && v == false) {
                     tmp = this.firstdir;
                     v = true;
                 }
-                if (tmp ==null){
+                if (tmp == null){
                     return null;
                 }
             }
@@ -86,12 +94,25 @@ public class FilesManager {
         }
     }
 
-    public void addProject(String name, String path){
+    public void addProject(String name, String path, ItemStack onHand){
         FilesHandler target = getFile(path);
         if (target != null){
             if (target instanceof Directories){
-                //((Directories) target).getContenante().add(new Projects(name,null,14, (short) 1,name));
+                ((Directories) target).getContenante().add(new Projects(name,null,onHand.getType(), onHand.getDurability(), new Qbloc("world",27.30,75.50,179.42,0,0)));
             }
+        }
+    }
+
+    public void remove(String name, String path){
+        FilesHandler target = getFile(path);
+        if (target != null){
+            FilesHandler rm = null;
+            for (FilesHandler i: ((Directories) target).getContenante()) {
+                if (i.getName().equals(name)){
+                    rm = i;
+                }
+            }
+            ((Directories) target).getContenante().remove(rm);
         }
     }
 }

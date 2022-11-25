@@ -2,12 +2,15 @@ package fr.leod1.qbprojectmanager.GUIInterface;
 
 import fr.leod1.qbprojectmanager.directories.FilesHandler;
 import fr.leod1.qbprojectmanager.directories.directorie.Directories;
+import fr.leod1.qbprojectmanager.directories.projects.Projects;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -57,10 +60,10 @@ public class PlayerinvManager implements Listener {
         SupprDossier.setItemMeta(mSupprDossier);
         //Suppr dossier
         //Crea projet
-        ItemStack CreaProjet = new ItemStack(Material.PISTON_BASE,1);
+        /*ItemStack CreaProjet = new ItemStack(Material.LEGACY_PISTON_BASE,1);
         ItemMeta mCreaProjet = CreaProjet.getItemMeta();
         mCreaProjet.setDisplayName("§aCréation d'un projet");
-        CreaProjet.setItemMeta(mCreaProjet);
+        CreaProjet.setItemMeta(mCreaProjet);*/
         //Crea projet
         //Crea dossier
         ItemStack CreaDossier = new ItemStack(Material.BOOK,1);
@@ -69,10 +72,10 @@ public class PlayerinvManager implements Listener {
         CreaDossier.setItemMeta(mCreaDossier);
         //Crea dossier
         //DECORATION
-        ItemStack deco = new ItemStack(Material.STAINED_GLASS_PANE,1);
+        /*ItemStack deco = new ItemStack(Material.BLACK_STAINED_GLASS_PANE,1);
         ItemMeta mdeco = deco.getItemMeta();
         mdeco.setDisplayName("§8DECO");
-        deco.setItemMeta(mdeco);
+        deco.setItemMeta(mdeco);*/
         //DECORATION
         //RETOUR
         ItemStack Back = new ItemStack(Material.BARRIER,1);
@@ -91,6 +94,12 @@ public class PlayerinvManager implements Listener {
         ItemMeta mPP = PP.getItemMeta();
         mPP.setDisplayName("§6Page precedente");
         PP.setItemMeta(mPP);
+
+        //ADD PROJ
+        ItemStack CreaProjet = new ItemStack(Material.PAPER,1);
+        ItemMeta mCreaProjet = CreaProjet.getItemMeta();
+        mCreaProjet.setDisplayName("§aCréation d'un fichier");
+        CreaProjet.setItemMeta(mCreaProjet);
         //PAGE PRECEDENTE
         invofpl.setItem(47,Back);
         invofpl.setItem(45,PP);
@@ -100,40 +109,59 @@ public class PlayerinvManager implements Listener {
         invofpl.setItem(51,SupprDossier);
         invofpl.setItem(52,CreaProjet);
         invofpl.setItem(53,CreaDossier);
-        for (int j = 36; j < 45; j++) {
+        /*for (int j = 36; j < 45; j++) {
             invofpl.setItem(j,deco);
-        }
+        }*/
 
         pl.openInventory(invofpl);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() != null && e.getClickedInventory().getName().contains("§cPath: §1") && e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR) {
+        if (e.getClickedInventory() != null && e.getView().getTitle().contains("§cPath: §1") && e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR) {
             e.setCancelled(true);
             String nameItem = e.getCurrentItem().getItemMeta().getDisplayName();
-            String path = e.getClickedInventory().getName().replace("§cPath: §1", "");
+            String path = e.getView().getTitle().replace("§cPath: §1", "");
             //Tools
             switch (nameItem){
                 case "§4Suppretion d'un projet":
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
+
+
                 case "§8DECO":
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
+
+
                 case "§4Suppretion d'un dossier":
-                    MAINQB.filesmanager.getFile(path).remove();
+                    MAINQB.filesmanager.getFile(path).remove("xd");
                     e.getWhoClicked().sendMessage(path);
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     String pathB = String.join("/", Arrays.copyOf(path.split("/"),path.split("/").length-1));
                     OpenDefaultInf(pathB, Bukkit.getPlayer(e.getWhoClicked().getName()));
                     break;
+
+
                 case "§aCréation d'un projet":
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
+
+
                 case "§6Filtre":
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
+
+                case "§aCréation d'un fichier":
+                    if (e.getWhoClicked().getItemInHand().getType()== Material.AIR){
+                        e.getWhoClicked().sendMessage("Hand " + nameItem);
+                        break;
+                    }
+                    MAINQB.filesmanager.addProject("TestProj2", path,e.getWhoClicked().getItemInHand());
+                    OpenDefaultInf(path, Bukkit.getPlayer(e.getWhoClicked().getName()));
+                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
+                    break;
+
                 case "§aCréation d'un dossier":
                     if (e.getWhoClicked().getItemInHand().getType()== Material.AIR){
                         e.getWhoClicked().sendMessage("Hand " + nameItem);
@@ -143,23 +171,46 @@ public class PlayerinvManager implements Listener {
                     OpenDefaultInf(path, Bukkit.getPlayer(e.getWhoClicked().getName()));
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
+
+
                 case "§6Page suivante":
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
                 case "§6Page precedente":
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
+
                 case "§4Retour":
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
-                    //String pathU = path.replaceAll("/"+ ".*"+"", "");
                     String pathU = String.join("/", Arrays.copyOf(path.split("/"),path.split("/").length-1));
                     e.getWhoClicked().sendMessage(pathU);
                     OpenDefaultInf(pathU, Bukkit.getPlayer(e.getWhoClicked().getName()));
                     break;
                 default:
-                    OpenDefaultInf(path+"/" + e.getCurrentItem().getItemMeta().getDisplayName(), Bukkit.getPlayer(e.getWhoClicked().getName()));
+                    switch (e.getClick()){
+                        case MIDDLE:
+                            MAINQB.filesmanager.remove(e.getCurrentItem().getItemMeta().getDisplayName(),path);
+                            //Bukkit.getPlayer(e.getWhoClicked().getName()).closeInventory();
+                            OpenDefaultInf(path, Bukkit.getPlayer(e.getWhoClicked().getName()));
+                            break;
+                        default:
+                            FilesHandler file = MAINQB.filesmanager.getFile(path +"/"+ e.getCurrentItem().getItemMeta().getDisplayName());
+                            if (file instanceof Directories){
+                                OpenDefaultInf(path+"/" + e.getCurrentItem().getItemMeta().getDisplayName(), Bukkit.getPlayer(e.getWhoClicked().getName()));
+                            } else {
+                                e.getWhoClicked().sendMessage("tp" + nameItem);
+                                Bukkit.getPlayer(e.getWhoClicked().getName()).teleport(((Projects) file).getLoc()); //.teleport((Projects file).getLoc())
+                                break;
+                            }
+
+                    }
                     break;
             }
         }
+    }
+
+    @EventHandler
+    public void onchat(AsyncPlayerChatEvent e){
+
     }
 }

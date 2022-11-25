@@ -1,6 +1,7 @@
 package fr.leod1.qbprojectmanager;
 
 import fr.leod1.qbprojectmanager.GUIInterface.PlayerinvManager;
+import fr.leod1.qbprojectmanager.GUIInterface.QBDataPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -15,9 +16,11 @@ public final class QBProjetctManager extends JavaPlugin {
     public static QBProjetctManager MAINQB;
     public FilesManager filesmanager;
     public HashMap<Player, PlayerinvManager> linkedPlayerInventory;
+    public HashMap<Player, QBDataPlayer> linkedPlayerData;
 
     @Override
     public void onEnable() {
+        //System.out.println("zebi 2");
         MAINQB = this;
         filesmanager = new FilesManager();
         linkedPlayerInventory = new HashMap<>();
@@ -25,6 +28,7 @@ public final class QBProjetctManager extends JavaPlugin {
         this.getCommand("test").setExecutor(new Test());
         for (Player pl: Bukkit.getOnlinePlayers()) {
             linkedPlayerInventory.put(pl,new PlayerinvManager(pl));
+            linkedPlayerData.put(pl,new QBDataPlayer(null,null));
         }
     }
 

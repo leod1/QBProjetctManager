@@ -20,7 +20,8 @@ public class Test implements CommandExecutor {
                 MAINQB.filesmanager.addDirectory(args[1], args[2],pl.getItemInHand());
             }
             if (args[0].equalsIgnoreCase("addproj")){
-                MAINQB.filesmanager.addProject(args[1], args[2]);
+                //MAINQB.filesmanager.addProject(args[1], args[2]);
+                System.out.println("tg");
             }
             if (args[0].equalsIgnoreCase("checkRoot")){
                 for (FilesHandler i: MAINQB.filesmanager.firstdir.getContenante()) {

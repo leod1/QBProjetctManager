@@ -1,6 +1,9 @@
 package fr.leod1.qbprojectmanager.ultils;
 
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
 public class Qbloc {
     private String world;
 
@@ -69,5 +72,10 @@ public class Qbloc {
 
     public void setPitch(float pitch) {
         this.Pitch = pitch;
+    }
+
+    public Location getLocation(){
+        Location loc = new Location(Bukkit.getWorld(this.world),this.x,this.y,this.z,this.Yaw,this.Pitch);
+        return loc;
     }
 }

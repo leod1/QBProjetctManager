@@ -1,6 +1,7 @@
 name: QBProjetctManager
 version: ${project.version}
 main: fr.leod1.qbprojectmanager.QBProjetctManager
+version API : 1.17.1
 authors: [ leod1 ]
 description: Project manager for QuanticsBuild
 commands:

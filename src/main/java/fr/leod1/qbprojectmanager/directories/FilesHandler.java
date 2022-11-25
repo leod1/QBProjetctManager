@@ -6,7 +6,7 @@ public interface FilesHandler {
 
     String getDir();
 
-    void remove();
+    void remove(String name);
 
     boolean isDir();
 

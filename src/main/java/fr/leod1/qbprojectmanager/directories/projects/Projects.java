@@ -1,27 +1,30 @@
 package fr.leod1.qbprojectmanager.directories.projects;
 
 import fr.leod1.qbprojectmanager.directories.FilesHandler;
+import fr.leod1.qbprojectmanager.ultils.Qbloc;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Arrays;
 
 public class Projects implements FilesHandler{
 
     private String name;
     private String nameHead;
-    private int Itemviews;
+    //private int Itemviews;
 
     private Short MetaData;
     private Material viewItem;
     private String[] viewDesc;
 
-    public Projects(String name, String nameHead, int itemviews, Short metaData) {
+    private Qbloc loc;
+
+    public Projects(String name, String nameHead, Material viewItem, Short metaData, Qbloc loc) {
         this.name = name;
         this.nameHead = nameHead;
-        Itemviews = itemviews;
-        MetaData = metaData;
+        this.viewItem = viewItem;
+        this.MetaData = metaData;
+        this.loc = loc;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class Projects implements FilesHandler{
     }
 
     @Override
-    public void remove() {
+    public void remove(String name) {
 
     }
 
@@ -48,8 +51,11 @@ public class Projects implements FilesHandler{
         final ItemStack item = new ItemStack(this.viewItem, 1,MetaData);
         final ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
-        meta.setLore(Arrays.asList(this.viewDesc));
+        //meta.setLore(Arrays.asList(this.viewDesc));
         item.setItemMeta(meta);
         return item;
+    }
+    public Location getLoc() {
+        return this.loc.getLocation();
     }
 }

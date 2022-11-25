@@ -31,7 +31,6 @@ public class Directories implements FilesHandler {
         this.viewItem = viewItem;
         contenante = new ArrayList<>();
         views = new HashMap<>();
-        //contenante.add(new Projects("Retour",null,))
     }
 
     public ArrayList<FilesHandler> getContenante() {
@@ -44,21 +43,28 @@ public class Directories implements FilesHandler {
     }
 
     @Override
-    public void remove() {
+    public void remove(String name) {
         if (this.root == false){
-            String pathU = String.join("/", Arrays.copyOf(path.split("/"),path.split("/").length-1));
+            /*System.out.println(path + " gt");
+            ArrayList<String> pathUl = new ArrayList<String>();
+            for (String i:path.split("/")) {
+                pathUl.add(i);
+            }
+            pathUl.remove(pathUl.size()-1);
+            String pathU = "";
+            for (String i: pathUl){
+                pathU = pathU + i;
+            }
+
+            System.out.println(pathU + " gt");
+            Directories Upper = (Directories) MAINQB.filesmanager.getFile(pathU);*/
             System.out.println(path);
-            System.out.println(pathU);
-            if (MAINQB.filesmanager.getFile(pathU) instanceof Directories){
-                Directories a = (Directories) MAINQB.filesmanager.getFile(pathU);
-                Directories b = null;
-                for (FilesHandler f: a.getContenante()) {
-                    System.out.println(f.getName());
-                    if (f.getName().equalsIgnoreCase(this.name)){
-                        b = (Directories) f;
-                    }
+            System.out.println(debugContenantes() + "      YT");
+            for (FilesHandler i: this.getContenante()) {
+                System.out.println(name + " gt" + i.getName());
+                if (i.getName().equals(name)){
+                    this.getContenante().remove(i);
                 }
-                a.getContenante().remove(b);
             }
         }
     }
@@ -75,7 +81,7 @@ public class Directories implements FilesHandler {
 
     @Override
     public ItemStack getView() {
-        ItemStack item = new ItemStack(this.viewItem, 1,MetaData);
+        ItemStack item = new ItemStack(this.viewItem, 1, MetaData);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         //meta.setLore(Arrays.asList(this.viewDesc));
