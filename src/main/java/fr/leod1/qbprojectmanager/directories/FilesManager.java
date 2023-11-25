@@ -53,6 +53,15 @@ public class FilesManager {
         FileUtils.save(file, json);
     }
 
+    public void doHardSave(){
+        this.serialization = new DirectoriesserializationGson();
+        File DirectoryProj = new File(MAINQB.getDataFolder(), "/projectsqbSAVE/");
+        DirectoryProj.mkdirs();
+        File file = new File(DirectoryProj, "projects.json");
+        String json = this.serialization.serializeDirectories(firstdir);
+        FileUtils.save(file, json);
+    }
+
 
     public void runFirst(){
         this.firstdir = new Directories(true,"QBPM",null,null,null);
@@ -94,11 +103,11 @@ public class FilesManager {
         }
     }
 
-    public void addProject(String name, String path, ItemStack onHand){
+    public void addProject(String name, String path, ItemStack onHand, Qbloc qbloc){
         FilesHandler target = getFile(path);
         if (target != null){
             if (target instanceof Directories){
-                ((Directories) target).getContenante().add(new Projects(name,null,onHand.getType(), onHand.getDurability(), new Qbloc("world",27.30,75.50,179.42,0,0)));
+                ((Directories) target).getContenante().add(new Projects(name,null,onHand.getType(), onHand.getDurability(), qbloc));
             }
         }
     }
@@ -114,5 +123,44 @@ public class FilesManager {
             }
             ((Directories) target).getContenante().remove(rm);
         }
+    }
+
+    public boolean nameExist(String name, String path){
+        FilesHandler target = getFile(path);
+        for (FilesHandler i: ((Directories) target).getContenante()) {
+            if (i.getName().equalsIgnoreCase(name)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean pathExist(String path){
+        if (path.substring(path.length() - 1).equalsIgnoreCase("/")){
+            return false;
+        }
+        ArrayList<String> names = new ArrayList<String>();
+        for (String i:path.split("/")) {
+            names.add(i);
+        }
+        int lastIndex = names.size() - 1;
+        String x = names.get(lastIndex);
+        if (names.size() > 1){
+            names.remove(lastIndex);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < names.size(); i++) {
+            sb.append(names.get(i));
+            if (i < names.size() - 1) {
+                sb.append("/");
+            }
+        }
+        Directories target = (Directories) getFile(sb.toString());
+        for (FilesHandler file: target.getContenante()) {
+            if (file.getName().equals(x)){
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,12 +1,25 @@
 package fr.leod1.qbprojectmanager.GUIInterface;
 
+import org.bukkit.inventory.ItemStack;
+
 public class QBDataPlayer {
     String Path;
     String event;
 
-    public QBDataPlayer(String path, String event) {
+    ItemStack itemOn;
+
+    public ItemStack getItemOn() {
+        return itemOn;
+    }
+
+    public QBDataPlayer(String path, String event, ItemStack itemOn) {
         Path = path;
         this.event = event;
+        this.itemOn = itemOn;
+    }
+
+    public void setItemOn(ItemStack itemOn) {
+        this.itemOn = itemOn;
     }
 
     public String getPath() {

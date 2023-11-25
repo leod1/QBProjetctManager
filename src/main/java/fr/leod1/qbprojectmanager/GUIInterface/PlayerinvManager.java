@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,7 +39,18 @@ public class PlayerinvManager implements Listener {
         invofpl = Bukkit.createInventory(null, 54, "§cPath: §1"+path);
         int i = 0;
         for (FilesHandler dir: dirs.getContenante()) {
-            invofpl.setItem(i, dir.getView());
+            ItemStack xdx = dir.getView().clone();
+            ItemMeta xd = xdx.getItemMeta();
+            if (dir instanceof Directories){
+                xd.setDisplayName("§8[§7Dossier§8] §f" + dir.getName());
+                xd.setLore(Arrays.asList(" ", "§8[§7GAUCHE§8] §fRentré dans le dossier", "§8[§7MOLETTE§8] §fSupprimer le dossier (récursive)"));
+            } else {
+                xd.setDisplayName("§8[§7Projet§8] §f" + dir.getName());
+                xd.setLore(Arrays.asList(" ","§8[§7GAUCHE§8] §fTéléporter au projet", "§8[§7MOLETTE§8] §fSupprimer le fichier"));
+
+            }
+            xdx.setItemMeta(xd);
+            invofpl.setItem(i, xdx);
             i++;
         }
         //filtre
@@ -47,36 +59,12 @@ public class PlayerinvManager implements Listener {
         mFiltre.setDisplayName("§6Filtre");
         Filtre.setItemMeta(mFiltre);
         //filtre
-        //Suppr fichier
-        ItemStack SupprProjet = new ItemStack(Material.REDSTONE,1);
-        ItemMeta mSupprProjet = SupprProjet.getItemMeta();
-        mSupprProjet.setDisplayName("§4Suppretion d'un projet");
-        SupprProjet.setItemMeta(mSupprProjet);
-        //Suppr fichier
-        //Suppr dossier
-        ItemStack SupprDossier = new ItemStack(Material.REDSTONE_BLOCK,1);
-        ItemMeta mSupprDossier = SupprDossier.getItemMeta();
-        mSupprDossier.setDisplayName("§4Suppretion d'un dossier");
-        SupprDossier.setItemMeta(mSupprDossier);
-        //Suppr dossier
-        //Crea projet
-        /*ItemStack CreaProjet = new ItemStack(Material.LEGACY_PISTON_BASE,1);
-        ItemMeta mCreaProjet = CreaProjet.getItemMeta();
-        mCreaProjet.setDisplayName("§aCréation d'un projet");
-        CreaProjet.setItemMeta(mCreaProjet);*/
-        //Crea projet
         //Crea dossier
         ItemStack CreaDossier = new ItemStack(Material.BOOK,1);
         ItemMeta mCreaDossier = CreaDossier.getItemMeta();
         mCreaDossier.setDisplayName("§aCréation d'un dossier");
         CreaDossier.setItemMeta(mCreaDossier);
         //Crea dossier
-        //DECORATION
-        /*ItemStack deco = new ItemStack(Material.BLACK_STAINED_GLASS_PANE,1);
-        ItemMeta mdeco = deco.getItemMeta();
-        mdeco.setDisplayName("§8DECO");
-        deco.setItemMeta(mdeco);*/
-        //DECORATION
         //RETOUR
         ItemStack Back = new ItemStack(Material.BARRIER,1);
         ItemMeta mb = Back.getItemMeta();
@@ -98,15 +86,13 @@ public class PlayerinvManager implements Listener {
         //ADD PROJ
         ItemStack CreaProjet = new ItemStack(Material.PAPER,1);
         ItemMeta mCreaProjet = CreaProjet.getItemMeta();
-        mCreaProjet.setDisplayName("§aCréation d'un fichier");
+        mCreaProjet.setDisplayName("§aCréation d'un projet");
         CreaProjet.setItemMeta(mCreaProjet);
         //PAGE PRECEDENTE
         invofpl.setItem(47,Back);
         invofpl.setItem(45,PP);
         invofpl.setItem(46,PS);
         invofpl.setItem(48,Filtre);
-        invofpl.setItem(50,SupprProjet);
-        invofpl.setItem(51,SupprDossier);
         invofpl.setItem(52,CreaProjet);
         invofpl.setItem(53,CreaDossier);
         /*for (int j = 36; j < 45; j++) {
@@ -124,93 +110,75 @@ public class PlayerinvManager implements Listener {
             String path = e.getView().getTitle().replace("§cPath: §1", "");
             //Tools
             switch (nameItem){
-                case "§4Suppretion d'un projet":
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
-                    break;
-
 
                 case "§8DECO":
                     e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
 
-
-                case "§4Suppretion d'un dossier":
-                    MAINQB.filesmanager.getFile(path).remove("xd");
-                    e.getWhoClicked().sendMessage(path);
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
-                    String pathB = String.join("/", Arrays.copyOf(path.split("/"),path.split("/").length-1));
-                    OpenDefaultInf(pathB, Bukkit.getPlayer(e.getWhoClicked().getName()));
-                    break;
-
-
-                case "§aCréation d'un projet":
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
-                    break;
-
-
                 case "§6Filtre":
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
-
-                case "§aCréation d'un fichier":
+                case "§aCréation d'un projet":
                     if (e.getWhoClicked().getItemInHand().getType()== Material.AIR){
-                        e.getWhoClicked().sendMessage("Hand " + nameItem);
+                        e.getWhoClicked().sendMessage("§8[§7QBL§8] §fIl faut avoir un item dans la main ! (Ce sera l'item dans le menu)");
                         break;
                     }
-                    MAINQB.filesmanager.addProject("TestProj2", path,e.getWhoClicked().getItemInHand());
-                    OpenDefaultInf(path, Bukkit.getPlayer(e.getWhoClicked().getName()));
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
+                    MAINQB.linkedPlayerData.put((Player) e.getWhoClicked(),new QBDataPlayer(path, "nameFil", e.getWhoClicked().getItemInHand()));
+                    e.getWhoClicked().sendMessage("§8[§7QBL§8] §fÉcrit le nom du projet dans le chat !");
+                    e.getWhoClicked().closeInventory();
                     break;
 
                 case "§aCréation d'un dossier":
                     if (e.getWhoClicked().getItemInHand().getType()== Material.AIR){
-                        e.getWhoClicked().sendMessage("Hand " + nameItem);
+                        e.getWhoClicked().sendMessage("§8[§7QBL§8] §fIl faut avoir un item dans la main ! (Ce sera l'item dans le menu)");
                         break;
                     }
-                    MAINQB.filesmanager.addDirectory("TestGraph2", path,e.getWhoClicked().getItemInHand());
-                    OpenDefaultInf(path, Bukkit.getPlayer(e.getWhoClicked().getName()));
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
+                    if (e.getWhoClicked().hasPermission("qbl.create")){
+                        MAINQB.linkedPlayerData.put((Player) e.getWhoClicked(),new QBDataPlayer(path, "nameDir", e.getWhoClicked().getItemInHand()));
+                        e.getWhoClicked().sendMessage("§8[§7QBL§8] §fÉcrit le nom du dossier dans le chat !");
+                        e.getWhoClicked().closeInventory();
+                        break;
+                    }
                     break;
 
 
                 case "§6Page suivante":
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
                 case "§6Page precedente":
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
                     break;
 
+
                 case "§4Retour":
-                    e.getWhoClicked().sendMessage("C'est bon " + nameItem);
-                    String pathU = String.join("/", Arrays.copyOf(path.split("/"),path.split("/").length-1));
-                    e.getWhoClicked().sendMessage(pathU);
-                    OpenDefaultInf(pathU, Bukkit.getPlayer(e.getWhoClicked().getName()));
+                    if (!path.equalsIgnoreCase("QBPM")){
+                        String pathU = String.join("/", Arrays.copyOf(path.split("/"),path.split("/").length-1));
+                        OpenDefaultInf(pathU, Bukkit.getPlayer(e.getWhoClicked().getName()));
+                    }
                     break;
                 default:
                     switch (e.getClick()){
                         case MIDDLE:
-                            MAINQB.filesmanager.remove(e.getCurrentItem().getItemMeta().getDisplayName(),path);
-                            //Bukkit.getPlayer(e.getWhoClicked().getName()).closeInventory();
-                            OpenDefaultInf(path, Bukkit.getPlayer(e.getWhoClicked().getName()));
-                            break;
-                        default:
-                            FilesHandler file = MAINQB.filesmanager.getFile(path +"/"+ e.getCurrentItem().getItemMeta().getDisplayName());
-                            if (file instanceof Directories){
-                                OpenDefaultInf(path+"/" + e.getCurrentItem().getItemMeta().getDisplayName(), Bukkit.getPlayer(e.getWhoClicked().getName()));
-                            } else {
-                                e.getWhoClicked().sendMessage("tp" + nameItem);
-                                Bukkit.getPlayer(e.getWhoClicked().getName()).teleport(((Projects) file).getLoc()); //.teleport((Projects file).getLoc())
+                            if (e.getWhoClicked().hasPermission("qbl.delete")){
+                                MAINQB.filesmanager.remove(e.getCurrentItem().getItemMeta().getDisplayName().replace("§8[§7Dossier§8] §f", "").replace("§8[§7Projet§8] §f",""),path);
+                                OpenDefaultInf(path, Bukkit.getPlayer(e.getWhoClicked().getName()));
+                                e.getWhoClicked().sendMessage("§8[§7QBL§8] §fProjet/Dossier §7"+ nameItem.replace("§8[§7Dossier§8] §f", "").replace("§8[§7Projet§8] §f","") + "§f bien supprimé");
                                 break;
                             }
+                            break;
+                        default:
+                            if (MAINQB.filesmanager.pathExist(path + "/" + nameItem.replace("§8[§7Dossier§8] §f", "").replace("§8[§7Projet§8] §f", ""))) {
+                                FilesHandler file = MAINQB.filesmanager.getFile(path + "/" + nameItem.replace("§8[§7Dossier§8] §f", "").replace("§8[§7Projet§8] §f", ""));
+                                if (file instanceof Directories) {
+                                    OpenDefaultInf(path + "/" + nameItem.replace("§8[§7Dossier§8] §f", "").replace("§8[§7Projet§8] §f", ""), Bukkit.getPlayer(e.getWhoClicked().getName()));
+                                } else {
+                                    e.getWhoClicked().sendMessage("§8[§7QBL§8] Téléportation au projet §7" + nameItem.replace("§8[§7Dossier§8] §f", "").replace("§8[§7Projet§8] §f", ""));
+                                    Bukkit.getPlayer(e.getWhoClicked().getName()).teleport(((Projects) file).getLoc()); //.teleport((Projects file).getLoc())
+                                    break;
+                                }
+                            }
+                            break;
 
                     }
                     break;
             }
         }
-    }
-
-    @EventHandler
-    public void onchat(AsyncPlayerChatEvent e){
-
     }
 }
